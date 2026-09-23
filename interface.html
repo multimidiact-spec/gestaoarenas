@@ -1,0 +1,189 @@
+<div class="app">
+<header class="top"><div class="brand-header"><span aria-hidden="true" style="font-size:46px;color:#2563eb">☆</span><div><div class="brandline"><span class="brand-star">☆</span><div class="eyebrow">CENTRO DE TREINAMENTO PARALÍMPICO BRASILEIRO</div></div><div class="title-row"><div class="title">Gestão de Arenas <span class="beta-badge">BETA</span></div><span class="system-pill"><span class="system-dot"></span>Sistema operacional</span></div><div class="subtitle">Departamento de Operações Esportivas</div></div></div><div class="actions no-print"><div class="user-box" title="Conta do computador do responsável pelas alterações"><span class="muted" style="font-size:11px;font-weight:800">USUÁRIO</span><span class="who" id="currentUserLabel">Não identificado</span><button class="btn small" id="changeUserBtn" style="display:none">Trocar</button></div><button class="btn" id="exportBtn">Exportar backup</button><button class="btn" id="importBtn">Importar backup</button><input id="importFile" type="file" accept="application/json" hidden></div></header>
+<div id="sharedStatus" role="status" style="display:none;padding:10px 14px;margin-bottom:8px;border-radius:10px"></div><button id="reloadSharedBtn" class="btn small no-print" style="display:none;margin-bottom:12px" onclick="location.reload()">Atualizar agenda</button><nav class="tabs no-print"><button class="tab active" data-view="home">Hoje no CT</button><button class="tab" data-view="planner">Planner Semanal</button><button class="tab" data-view="booking">Programação Fixa</button><button class="tab" data-view="event">Eventos &amp; Conflitos</button><button class="tab" data-view="lodging">Hospedagem</button><button class="tab" data-view="availability">Disponibilidade</button><button class="tab" data-view="indicators">Indicadores</button><button class="tab" data-view="reports">Relatórios &amp; Exportação</button><button class="tab" data-view="history">Histórico</button><button class="tab" data-view="public">Visão dos clubes</button><button class="tab" data-view="setup">Arenas &amp; Recursos</button></nav>
+
+<section id="view-home" class="view active">
+<div class="card pad"><div class="grid3"><div class="field"><label>DATA DE REFERÊNCIA</label><input id="homeDate" type="date"></div><div class="field"><label>ARENA</label><select id="homeArena"></select></div><div class="field" style="justify-content:end"><span>&nbsp;</span><button class="btn primary" id="goPlanner">Abrir planner desta arena</button></div></div></div>
+<div class="home-hero"><div><div class="eyebrow">PAINEL OPERACIONAL</div><h2 id="homeDayTitle" style="margin:4px 0 3px">Hoje no CT</h2><div class="muted" id="homeDaySubtitle">Resumo do dia</div></div><div id="homeStatusPill" class="home-status">Operação normal</div></div>
+<div class="stats home-stats" id="homeStats"></div>
+<div class="home-grid-main">
+  <div class="card pad"><div class="home-section-head"><div><h3>Agenda em destaque</h3><div class="muted" id="nowSubtitle">O que está acontecendo agora</div></div><span class="chip" id="nowCount">0</span></div><div id="nowList"></div></div>
+  <div class="card pad"><div class="home-section-head"><div><h3>Atenções do dia</h3><div class="muted">Eventos, suspensões e alertas operacionais</div></div><span class="chip" id="attentionCount">0</span></div><div id="attentionList"></div></div>
+</div>
+<div class="home-grid-main" style="margin-top:12px">
+  <div class="card pad"><div class="home-section-head"><div><h3>Eventos de hoje</h3><div class="muted">Categoria, espaços e indicadores do evento</div></div><span class="chip" id="eventTodayCount">0</span></div><div id="homeEvents"></div></div>
+  <div class="card pad"><div class="home-section-head"><div><h3>Hotelaria</h3><div class="muted">Ocupação diária sobre a capacidade de 280 pessoas</div></div><span class="chip" id="homeLodgingPct">0%</span></div><div id="homeLodging"></div></div>
+</div>
+<div class="home-grid-main" style="margin-top:12px">
+  <div class="card pad"><div class="home-section-head"><div><h3>Ocupação das arenas</h3><div class="muted">Percentual estimado de uso da capacidade entre 07h e 21h</div></div></div><div id="homeArenaUsage"></div></div>
+  <div class="card pad"><div class="home-section-head"><div><h3>Disponibilidade imediata</h3><div class="muted" id="homeAvailabilitySubtitle">Recursos com vaga agora</div></div><span class="chip" id="homeAvailableCount">0</span></div><div id="homeAvailability"></div></div>
+</div>
+</section>
+
+<section id="view-planner" class="view"><div class="card pad no-print"><div class="grid4"><div class="field"><label>ARENA</label><select id="plannerArena"></select></div><div class="field"><label>CLUBE</label><select id="plannerClub"><option value="ALL">Todos</option></select></div><div class="field"><label>SEMANA</label><input id="plannerWeek" type="date"></div><div class="inline" style="align-items:end"><button class="btn" id="prevWeek">← Anterior</button><button class="btn" id="nextWeek">Próxima →</button><button class="btn primary" id="printBtn">Imprimir / PDF</button></div></div></div><div class="card pad" style="margin-top:12px"><div id="plannerTitle" style="font-size:19px;font-weight:850;margin-bottom:10px"></div><div class="planner-wrap"><div id="plannerGrid" class="planner"></div></div></div><div class="card pad no-print" style="margin-top:12px"><div class="inline"><span class="chip">🟩 CPB</span><span class="chip">🟨 Externo / Clube</span><span class="chip">🔵 Evento</span><span class="chip">🟥 Suspenso</span><button class="btn small" id="publicFromPlanner">Abrir visão dos clubes</button></div></div></section>
+
+<section id="view-booking" class="view"><div class="grid2"><div class="card pad"><h3 id="bookingFormTitle" style="margin-top:0">Nova utilização fixa</h3><div id="bookingFormHelp" class="muted" style="font-size:13px;margin-bottom:12px">A rotina recorrente. Ela permanece mesmo quando ocorrerem eventos.</div><div class="grid2"><div class="field"><label>ARENA</label><select id="newArena"></select></div><div class="field"><label>RECURSO</label><select id="newResource"></select></div><div class="field"><label>CLUBE / INSTITUIÇÃO</label><input id="newClub" placeholder="Ex.: ADD"></div><div class="field"><label>MODALIDADE</label><input id="newSport" placeholder="Ex.: Bocha"></div><div class="field"><label>VÍNCULO</label><select id="newOrigin"><option value="external">Externo / Clube</option><option value="cpb">CPB</option></select></div><div class="field"><label>DIA DA SEMANA</label><select id="newDay"><option value="1">Segunda</option><option value="2">Terça</option><option value="3">Quarta</option><option value="4">Quinta</option><option value="5">Sexta</option><option value="6">Sábado</option><option value="0">Domingo</option></select></div><div></div><div class="field"><label>INÍCIO</label><input id="newStart" type="time" value="08:00"></div><div class="field"><label>FIM</label><input id="newEnd" type="time" value="10:00"></div></div><div id="newAvailability" class="banner warn" style="margin-top:14px">Clique em verificar para saber se a faixa já está ocupada.</div><div class="form-actions"><button class="btn" id="checkBooking">Verificar</button><button class="btn primary" id="saveBooking">Adicionar à programação fixa</button><button class="btn" id="cancelMasterEdit" style="display:none">Cancelar edição</button></div></div><div class="card pad"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h3 style="margin:0">Programação Fixa atual · registros ativos</h3><span id="masterCount" class="chip">0 registros</span></div><div id="masterTableBooking" style="margin-top:10px"></div><div class="muted" style="font-size:11px;margin-top:9px">A programação fixa é recorrente. Eventos e suspensões geram exceções sem apagar esta programação. Uma alteração aqui afeta a recorrência; para mudar somente um dia, use o Ajuste Manual.</div></div></div><div class="card pad" style="margin-top:12px"><div class="grid2"><div><h3 id="manualFormTitle" style="margin-top:0">Ajuste manual pontual</h3><div class="muted" style="font-size:13px;margin-bottom:12px">Use quando um evento liberar manualmente uma faixa que normalmente estaria suspensa. Ex.: evento até 19h e clube liberado para treinar das 19h às 21h. Esse lançamento vale somente na data escolhida e não altera a programação fixa.</div><div class="grid2"><div class="field"><label>DATA</label><input id="manualDate" type="date"></div><div class="field"><label>ARENA</label><select id="manualArena"></select></div><div class="field"><label>RECURSO</label><select id="manualResource"></select></div><div class="field"><label>CLUBE / INSTITUIÇÃO</label><input id="manualClub" placeholder="Ex.: ADD"></div><div class="field"><label>MODALIDADE</label><input id="manualSport" placeholder="Ex.: Bocha"></div><div class="field"><label>VÍNCULO</label><select id="manualOrigin"><option value="external">Externo / Clube</option><option value="cpb">CPB</option></select></div><div class="field"><label>INÍCIO</label><input id="manualStart" type="time" value="19:00"></div><div class="field"><label>FIM</label><input id="manualEnd" type="time" value="21:00"></div><div class="field" style="grid-column:1/-1"><label>OBSERVAÇÃO</label><input id="manualNote" placeholder="Ex.: Liberação manual após término da competição"></div></div><input id="manualEditId" type="hidden"><div id="manualAvailability" class="banner warn" style="margin-top:14px">Preencha os campos e clique em verificar.</div><div class="form-actions"><button class="btn" id="checkManual">Verificar</button><button class="btn primary" id="saveManualBtn">Adicionar ajuste manual</button><button class="btn" id="cancelManualEdit" style="display:none">Cancelar edição</button></div></div><div><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h3 style="margin:0">Ajustes manuais ativos</h3><span id="manualCount" class="chip">0 ajustes</span></div><div id="manualTable" style="margin-top:10px"></div></div></div></div></section>
+
+<section id="view-event" class="view"><div class="card pad"><h3 style="margin-top:0" id="eventFormTitle">Novo evento</h3><div class="muted" style="font-size:13px;margin-bottom:12px">Um evento pode ter vários dias e várias arenas. Cada bloco pode ter recurso e horário próprios.</div><div class="grid4"><div class="field"><label>NOME DO EVENTO</label><input id="eventName" placeholder="Ex.: Campeonato Brasileiro"></div><div class="field"><label>CATEGORIA *</label><select id="eventCategory"><option value="">Selecione...</option><option>Competição</option><option>Concentração</option><option>Curso</option><option>Evento</option><option>Feriado</option><option>Gravação</option><option>Manutenção</option><option>Palestra</option><option>Treino</option></select></div><div class="field"><label>DATA INICIAL</label><input id="eventStart" type="date"></div><div class="field"><label>DATA FINAL</label><input id="eventEnd" type="date"></div></div><div class="card pad" style="margin-top:12px;background:#fff7ed;box-shadow:none;border:1px solid #fed7aa"><label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input id="eventCtClosed" type="checkbox" style="margin-top:3px;width:auto"><span><b>CT FECHADO</b><div class="muted" style="font-size:12px;margin-top:3px">Bloqueia todas as arenas durante o período do evento e suspende visualmente todas as atividades programadas.</div></span></label></div><div class="grid4" style="margin-top:12px"><div class="field"><label>MODALIDADE(S)</label><input id="eventModalities" placeholder="Ex.: Bocha, Judô, Natação"></div><div class="field"><label>PREVISÃO DE PÚBLICO GERAL</label><input id="eventPublicAudience" type="number" min="0" placeholder="Ex.: 500"></div><div class="field"><label>SOLICITANTE</label><input id="eventRequester" placeholder="Instituição / área solicitante"></div><div class="field"><label>RESPONSÁVEL</label><input id="eventResponsible" placeholder="Responsável pelo evento"></div></div><div class="grid4" style="margin-top:12px"><div class="field"><label>HORÁRIO GERAL</label><input id="eventGeneralTime" placeholder="Ex.: 08:00 às 18:00"></div><div class="field"><label>ALIMENTAÇÃO (PESSOAS)</label><input id="eventMeals" type="number" min="0" value="0" placeholder="0"></div><div class="field"><label>HOSPEDAGEM (PESSOAS)</label><input id="eventLodging" type="number" min="0" value="0" placeholder="0"></div><div class="field"><label>CENTRO DE CUSTO</label><input id="eventCostCenter" placeholder="Ex.: Operações Esportivas / Confederação / Projeto"></div></div><div class="grid4" style="margin-top:12px"><div class="field"><label>ATLETAS</label><input id="eventAthletes" type="number" min="0" placeholder="Quantidade"></div><div class="field"><label>COMISSÃO ORGANIZADORA</label><input id="eventCommittee" type="number" min="0" placeholder="Quantidade de pessoas"></div><div class="field"><label>ARENA/ESPAÇO — RESUMO</label><input id="eventArenaSummary" placeholder="Preenchido pelos blocos abaixo" readonly></div><div class="field"><label>HORÁRIO</label><input id="eventTimeSummary" placeholder="Ex.: 08:00–18:00"></div></div><div class="grid2" style="margin-top:12px"><div class="field"><label>OBSERVAÇÃO EXTERNA</label><textarea id="eventPublicNote" rows="3" placeholder="Informação que pode aparecer aos clubes"></textarea></div><div class="field"><label>OBSERVAÇÃO INTERNA</label><textarea id="eventInternalNote" rows="3" placeholder="Informação somente para operação"></textarea></div></div><div class="card pad" id="eventBlocksCard" style="margin-top:14px;background:#f8fafc;box-shadow:none"><div class="section-title">Arenas / recursos utilizados</div><div id="eventBlocks"></div><div class="inline"><button class="btn" id="addEventBlock">+ Adicionar arena/recurso</button><button class="btn" id="eventExample">Carregar exemplo multi-arena</button></div></div><div class="card pad" style="margin-top:14px;background:#fff;box-shadow:none"><div class="section-title">Conflitos e ação</div><select id="eventAction"><option value="suspend">Suspender as reservas conflitantes somente nas datas afetadas</option><option value="block">Não permitir criar o evento com conflito</option></select><div id="eventCheck" class="banner warn" style="margin-top:10px">Adicione espaços e verifique.</div><div class="muted" style="font-size:11px;margin-top:7px">Hospedagem: o limite operacional configurado é de <b>280 pessoas por dia</b>.</div></div><div class="form-actions"><button class="btn" id="checkEvent">Verificar todos os conflitos</button><button class="btn primary" id="createEvent">Criar evento</button><button class="btn" id="cancelEventEdit" style="display:none">Cancelar edição</button></div></div><div class="card pad" style="margin-top:14px"><div class="inline" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Eventos cadastrados</h3><button class="btn small danger" id="clearEvents">Limpar eventos</button></div><div id="eventTable" style="margin-top:10px"></div></div></section>
+
+<section id="view-lodging" class="view">
+<div class="grid3">
+<div class="card pad"><div class="eyebrow">CAPACIDADE DIÁRIA</div><div style="font-size:30px;font-weight:850;margin-top:4px">280</div><div class="muted" style="font-size:12px">pessoas hospedadas / dia</div></div>
+<div class="card pad"><div class="eyebrow">MÊS</div><div class="field" style="margin-top:6px"><label>MÊS DE REFERÊNCIA</label><input id="lodgingMonth" type="month"></div></div>
+<div class="card pad"><div class="eyebrow">EVENTOS COM HOSPEDAGEM</div><div id="lodgingEventCount" style="font-size:30px;font-weight:850;margin-top:4px">0</div><div class="muted" style="font-size:12px">eventos ativos no período</div></div>
+</div>
+<div class="card pad" style="margin-top:12px"><div class="section-title">Mapa de ocupação da hospedagem</div><div class="muted" style="font-size:12px;margin-bottom:12px">A quantidade de hospedagem informada no evento é considerada para cada dia do período do evento. O sistema soma os eventos ativos e destaca quando a capacidade de 280 pessoas é ultrapassada.</div><div id="lodgingGrid"></div></div>
+<div class="card pad" style="margin-top:12px"><div class="section-title">Detalhes por evento</div><div id="lodgingEvents"></div></div>
+</section>
+
+
+<section id="view-availability" class="view">
+<div class="card pad">
+<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h3 style="margin:0">Disponibilidade de espaços e recursos</h3><div class="muted" style="font-size:12px;margin-top:4px">Consulte janelas livres considerando programação fixa, ajustes, eventos e o limite simultâneo de cada recurso.</div></div><div class="avail-legend"><span><i class="legend-dot av-green"></i>Livre</span><span><i class="legend-dot av-yellow"></i>Uso parcial</span><span><i class="legend-dot av-blue"></i>Evento</span><span><i class="legend-dot av-red"></i>Sem vaga</span></div></div>
+<div class="grid3" style="margin-top:14px"><div class="field"><label>DATA</label><input id="availabilityDate" type="date"></div><div class="field"><label>ARENA</label><select id="availabilityArena"></select></div><div class="field"><label>TEMPO MÍNIMO LIVRE (MIN)</label><input id="availabilityMin" type="number" min="15" step="15" value="60"></div></div>
+<div class="form-actions"><button class="btn primary" id="availabilitySearch">Buscar disponibilidade</button><button class="btn" id="availabilityToday">Hoje</button><button class="btn" id="availabilityTomorrow">Amanhã</button></div>
+</div>
+<div class="grid4" style="margin-top:12px"><div class="stat"><div class="l">JANELAS LIVRES</div><div class="v" id="availabilityWindows">0</div><div class="muted" style="font-size:10px" id="availabilityWindowsSub">—</div></div><div class="stat"><div class="l">RECURSOS VERIFICADOS</div><div class="v" id="availabilityResources">0</div></div><div class="stat"><div class="l">FAIXAS SEM VAGA</div><div class="v" id="availabilityBlocks">0</div></div><div class="stat"><div class="l">DIA DA SEMANA</div><div class="v" id="availabilityDay" style="font-size:17px">—</div></div></div>
+<div class="card pad" style="margin-top:12px"><div class="section-title" id="availabilityTitle">Resultado</div><div class="avail-note" id="availabilityHoursNote">O horário exibido segue a configuração de funcionamento de cada arena. Quando um recurso aceita mais de um clube, uma ocupação parcial continua aparecendo como disponibilidade, indicando quantas vagas simultâneas restam.</div><div id="availabilityResults"></div></div>
+</section>
+
+
+<section id="view-indicators" class="view">
+  <div class="card pad">
+    <div class="inline" style="justify-content:space-between;align-items:flex-start">
+      <div><h2 style="margin:0 0 4px;font-size:20px">Indicadores de utilização</h2><div class="muted" style="font-size:12px">Leitura gerencial com eventos e programação de treinamentos separados.</div></div>
+      <span class="chip" id="indicatorPeriodLabel">Período</span>
+    </div>
+    <div class="indicator-filters" style="margin-top:14px">
+      <div class="field"><label>DATA INICIAL</label><input id="indicatorStart" type="date"></div>
+      <div class="field"><label>DATA FINAL</label><input id="indicatorEnd" type="date"></div>
+      <div class="field"><label>ARENA</label><select id="indicatorArena"><option value="ALL">Todas</option></select></div>
+      <div class="field"><label>CATEGORIA DO EVENTO</label><select id="indicatorCategory"><option value="ALL">Todas</option></select></div>
+      <div class="field"><label>INSTITUIÇÃO / CONFEDERAÇÃO</label><select id="indicatorInstitution"><option value="ALL">Todas</option></select></div>
+      <div class="field"><label>MODALIDADE DO EVENTO</label><select id="indicatorModality"><option value="ALL">Todas</option></select></div>
+    </div>
+    <div class="indicator-note">Categoria, instituição e modalidade filtram somente os eventos. Data e arena atuam no painel inteiro. Em eventos multimodalidades, cada modalidade é contabilizada individualmente.</div>
+    <div class="form-actions"><button class="btn primary" id="indicatorApply">Atualizar indicadores</button><button class="btn" id="indicatorThisYear">Este ano</button><button class="btn" id="indicatorLast30">Últimos 30 dias</button></div>
+  </div>
+
+  <div class="indicator-section-title"><div><span class="indicator-dot event-dot"></span><b>Eventos</b></div><span>Somente eventos cadastrados</span></div>
+  <div class="indicator-kpis">
+    <div class="indicator-kpi"><div class="label">Nº de eventos</div><div class="value" id="ikEvents">0</div><div class="indicator-note">Eventos com pelo menos um dia no período</div></div>
+    <div class="indicator-kpi"><div class="label">Nº de atletas</div><div class="value" id="ikAthletes">0</div><div class="indicator-note">Soma informada nos eventos</div></div>
+    <div class="indicator-kpi"><div class="label">Nº de comissão</div><div class="value" id="ikCommittee">0</div><div class="indicator-note">Comissão informada nos eventos</div></div>
+    <div class="indicator-kpi"><div class="label">Previsão de público</div><div class="value" id="ikPublic">0</div><div class="indicator-note">Soma da previsão geral</div></div>
+  </div>
+  <div class="indicator-grid">
+    <div class="indicator-panel"><h3>Eventos por categoria</h3><div id="indCategories"></div></div>
+    <div class="indicator-panel"><h3>Eventos por modalidade</h3><div id="indModalities"></div></div>
+    <div class="indicator-panel"><h3>Eventos por instituição / confederação</h3><div id="indInstitutions"></div></div>
+    <div class="indicator-panel" style="grid-column:1/-1"><h3>Quantidade por instituição e tipo de evento</h3><div class="indicator-helper">Use principalmente com o filtro <b>Este ano</b>. A tabela mostra quantos eventos de cada categoria cada instituição já realizou; não aplica limite ou cota automaticamente.</div><div id="indInstitutionCategoryMatrix" class="matrix-wrap" style="margin-top:10px"></div></div>
+    <div class="indicator-panel" style="grid-column:1/-1"><h3>Eventos encontrados pelos filtros</h3><div class="indicator-helper">Use, por exemplo, <b>Modalidade = Natação</b> + <b>Instituição = CBDV</b> para listar somente os eventos que atendem aos dois critérios.</div><div id="indFilteredEvents" class="matrix-wrap" style="margin-top:10px"></div></div>
+    <div class="indicator-panel" style="grid-column:1/-1"><h3>Uso das arenas pelos eventos · horas</h3><div id="indEventArenas"></div></div>
+  </div>
+
+  <div class="indicator-section-title"><div><span class="indicator-dot training-dot"></span><b>Programação / Treinamentos</b></div><span>Programação fixa realizada + ajustes manuais</span></div>
+  <div class="indicator-kpis">
+    <div class="indicator-kpi"><div class="label">Sessões realizadas</div><div class="value" id="ikTrainingSessions">0</div><div class="indicator-note">Ocorrências não suspensas + ajustes</div></div>
+    <div class="indicator-kpi"><div class="label">Horas de treinamento</div><div class="value" id="ikTrainingHours">0</div><div class="indicator-note">Horas registradas no período</div></div>
+    <div class="indicator-kpi"><div class="label">Instituições</div><div class="value" id="ikTrainingInstitutions">0</div><div class="indicator-note">Clubes/instituições distintos</div></div>
+    <div class="indicator-kpi"><div class="label">Modalidades</div><div class="value" id="ikTrainingModalities">0</div><div class="indicator-note">Modalidades distintas</div></div>
+  </div>
+  <div class="indicator-grid">
+    <div class="indicator-panel"><h3>Programação por instituição</h3><div id="indTrainingInstitutions"></div></div>
+    <div class="indicator-panel"><h3>Presença por instituição · dias no CT</h3><div class="indicator-helper">Conta cada data apenas uma vez por instituição, mesmo que ela treine em várias modalidades, arenas ou recursos no mesmo dia.</div><div id="indTrainingInstitutionDays" style="margin-top:10px"></div></div>
+    <div class="indicator-panel"><h3>Programação por modalidade</h3><div id="indTrainingModalities"></div></div>
+    <div class="indicator-panel"><h3>Programação por arena · horas</h3><div id="indTrainingArenas"></div></div>
+  </div>
+
+  <div class="indicator-section-title"><div><span class="indicator-dot space-dot"></span><b>Vida dos espaços</b></div><span>Eventos e treinamentos comparados</span></div>
+  <div class="indicator-grid">
+    <div class="indicator-panel" style="grid-column:1/-1"><h3>Vida de cada recurso · horas registradas</h3><div id="indResources"></div><div class="indicator-note">Mostra separadamente horas de eventos e horas da programação em cada recurso.</div></div>
+  </div>
+</section>
+
+<section id="view-reports" class="view">
+  <div class="card pad no-print">
+    <div class="report-head">
+      <div>
+        <div class="eyebrow">RELATÓRIOS E EXPORTAÇÃO</div>
+        <div class="report-title">Gerar relatório</div>
+        <div class="report-sub">Filtre as informações, confira a prévia e exporte em CSV para Excel ou imprima em PDF.</div>
+      </div>
+    </div>
+    <div class="report-toolbar">
+      <div class="field"><label>TIPO DE RELATÓRIO</label>
+        <select id="reportType">
+          <option value="events">Eventos</option>
+          <option value="training">Programação / Treinamentos</option>
+          <option value="lodging">Hospedagem</option>
+          <option value="institution">Eventos por instituição e tipo</option>
+          <option value="arena">Utilização das arenas</option>
+          <option value="history">Histórico de alterações</option>
+        </select>
+      </div>
+      <div class="field"><label>DATA INICIAL</label><input id="reportStart" type="date"></div>
+      <div class="field"><label>DATA FINAL</label><input id="reportEnd" type="date"></div>
+      <div class="field"><label>ARENA</label><select id="reportArena"><option value="ALL">Todas</option></select></div>
+      <div class="field"><label>INSTITUIÇÃO / CONFEDERAÇÃO</label><select id="reportInstitution"><option value="ALL">Todas</option></select></div>
+      <div class="field"><label>MODALIDADE</label><select id="reportModality"><option value="ALL">Todas</option></select></div>
+      <div class="field"><label>CATEGORIA</label><select id="reportCategory"><option value="ALL">Todas</option></select></div>
+      <div class="report-actions">
+        <button class="btn primary" id="generateReport" type="button">Gerar relatório</button>
+        <button class="btn" id="exportReportCsv" type="button">Exportar CSV / Excel</button>
+        <button class="btn" id="printReport" type="button">Imprimir / PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card pad" id="reportPrintArea" style="margin-top:12px">
+    <div class="report-head">
+      <div>
+        <div class="eyebrow">CENTRO DE TREINAMENTO PARALÍMPICO BRASILEIRO</div>
+        <div class="report-title" id="reportTitle">Relatório de eventos</div>
+        <div class="report-sub" id="reportPeriod">—</div>
+      </div>
+      <div class="chip" id="reportRowCount">0 registros</div>
+    </div>
+    <div id="reportSummary" class="report-summary"></div>
+    <div id="reportPreview" class="report-table-wrap"></div>
+    <div class="report-note">CSV em UTF-8 com separador ponto e vírgula, compatível com abertura no Excel. O PDF usa a impressão do navegador.</div>
+  </div>
+</section>
+<section id="view-history" class="view"><div class="card pad"><h3 style="margin-top:0">Histórico de alterações</h3><div class="muted" style="font-size:13px;margin-bottom:12px">Auditoria local das ações: quem alterou, quando, em qual área e o que foi modificado.</div><div class="grid3" style="margin-bottom:12px"><div class="field"><label>USUÁRIO</label><select id="historyUser"><option value="ALL">Todos</option></select></div><div class="field"><label>ÁREA</label><select id="historyArea"><option value="ALL">Todas</option></select></div><div class="field"><label>BUSCAR</label><input id="historySearch" placeholder="Ação, registro ou alteração"></div></div><div id="historyTable"></div></div></section>
+<section id="view-public" class="view">
+  <div class="card pad no-print">
+    <div class="public-toolbar">
+      <div class="public-toggle" role="group" aria-label="Tipo de visualização">
+        <button class="btn small active" id="publicModeDay" type="button">Por dia</button>
+        <button class="btn small" id="publicModeArena" type="button">Por arena</button>
+        <button class="btn small" id="publicModeClub" type="button">Por clube</button>
+      </div>
+      <div class="field" style="min-width:180px"><label>SEMANA</label><input id="publicWeek" type="date"></div>
+      <div class="field" id="publicArenaField" style="min-width:220px;display:none"><label>ARENA</label><select id="publicArena"></select></div>
+      <div class="field" id="publicClubField" style="min-width:240px;display:none"><label>CLUBE / INSTITUIÇÃO</label><select id="publicClub"></select></div>
+      <div class="field" style="justify-content:end;margin-left:auto"><span>&nbsp;</span><button class="btn primary" id="printPublic" type="button">Imprimir / PDF para clubes</button></div>
+    </div>
+  </div>
+
+  <div class="public-card" style="margin-top:12px">
+    <div id="publicHeader"></div>
+
+    <div class="public-legend">
+      <span>🟢 Programação CPB</span>
+      <span>🟡 Clube externo</span>
+      <span>🔵 Evento</span>
+      <span>🔴 Suspenso / CT fechado</span>
+    </div>
+
+    <div id="publicDayView" style="margin-top:14px"></div>
+    <div id="publicArenaView" style="margin-top:14px;display:none"></div>
+    <div id="publicClubView" style="margin-top:14px;display:none"></div>
+
+    <div class="muted" style="font-size:11px;margin-top:10px">Esta visão omite informações internas de operação. Última atualização local: <span id="publicUpdated"></span></div>
+  </div>
+</section>
+
+<section id="view-setup" class="view"><div class="grid2"><div class="card pad"><h3 style="margin-top:0">Nova arena</h3><div class="field"><label>NOME</label><input id="arenaName" placeholder="Ex.: Rugby"></div><div class="grid2" style="margin-top:10px"><div class="field"><label>ABERTURA</label><input id="arenaOpen" type="time" value="07:00"></div><div class="field"><label>FECHAMENTO</label><input id="arenaClose" type="time" value="21:00"></div></div><div class="muted" style="font-size:12px;margin-top:8px">A nova arena começa com um recurso padrão. O limite de clubes simultâneos é configurado individualmente em cada recurso. O horário de funcionamento pode ser alterado depois.</div><div class="form-actions"><button class="btn primary" id="addArena">Adicionar arena</button></div></div><div class="card pad"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h3 style="margin:0">Arenas cadastradas</h3><span class="chip">Editar ou excluir com proteção</span></div><div id="arenaTable" style="margin-top:10px"></div></div></div><div class="card pad" style="margin-top:12px"><h3 style="margin-top:0">Recursos da arena</h3><div class="muted" style="font-size:12px;margin-bottom:12px">Recurso é a divisão física do espaço. O <b>limite de clubes simultâneos</b> define quantos clubes podem usar aquele mesmo recurso ao mesmo tempo. Ex.: Pista = 6 clubes; Cancha 1 = 2 clubes. A exclusão é bloqueada quando houver vínculos.</div><div class="field" style="max-width:420px"><label>ARENA</label><select id="setupArena"></select></div><div id="resourceManager" style="margin-top:12px"></div></div><div class="card pad no-print" style="margin-top:12px"><h3 style="margin-top:0">Ferramentas</h3><div class="inline"><button class="btn" id="loadDemo">Carregar demonstração</button><button class="btn danger" id="clearData">Zerar base</button></div></div></section>
+</div>
+<div class="modal" id="detailModal"><div class="modal-box"><div class="modal-head"><div><div class="eyebrow">DETALHES</div><h3 id="detailTitle" style="margin:4px 0 0"></h3></div><button class="btn small" id="closeDetail">Fechar</button></div><div id="detailBody" style="margin-top:14px"></div></div></div>
