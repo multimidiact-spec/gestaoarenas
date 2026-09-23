@@ -1,0 +1,89 @@
+import json
+import streamlit as st
+
+st.set_page_config(
+    page_title="Gestão de Arenas", page_icon="🏟️", layout="wide"
+)
+
+st.title("🏟️ Sistema de Gestão de Arenas e Espaços Desportivos")
+
+
+# Função para carregar os dados do JSON
+@st.cache_data
+def load_data():
+  try:
+    with open(
+        "backup_gestao_arenas_2026-09-22.json", "r", encoding="utf-8"
+    ) as f:
+      return json.load(f)
+  except FileNotFoundError:
+    return None
+
+
+data = load_data()
+
+if data is None:
+  st.error(
+      "O ficheiro JSON não foi encontrado no repositório. Certifique-se de que"
+      " o carregou para o GitHub."
+  )
+else:
+  # Menu lateral para navegar pelas secções
+  menu = st.sidebar.selectbox(
+      "Navegação",
+      [
+          "Arenas e Recursos",
+          "Programação Fixa",
+          "Eventos",
+          "Histórico de Ações",
+      ],
+  )
+
+  if menu == "Arenas e Recursos":
+    st.subheader("Espaços Desportivos Disponíveis")
+    for arena in data.get("arenas", []):
+      with st.expander(f"📍 {arena['name']} (Horário: {arena['openTime']} - {arena['closeTime']})"):
+        st.write(f"**Recursos / Raias / Quadras:**")
+        for recurso in arena.get("resources", []):
+          cap = arena.get("resourceCaps", {}).get(recurso, 1)
+          st.markdown(f"- {recurso} (Capacidade simultânea: {cap})")
+
+  elif menu == "Programação Fixa":
+    st.subheader("Programação Semanal Fixa")
+    masters = data.get("masters", [])
+    if masters:
+      for m in masters:
+        st.info(
+            f"**Desporto:** {m.get('sport')} | **Clube:** {m.get('club')} |"
+            f" **Arena:** {m.get('a')} ({m.get('r')}) | **Horário:**"
+            f" {m.get('s')} às {m.get('e')}"
+        )
+    else:
+      st.write("Sem programações fixas registadas.")
+
+  elif menu == "Eventos":
+    st.subheader("Eventos e Competições Agendadas")
+    events = data.get("events", [])
+    for ev in events:
+      with st.container():
+        st.markdown(f"### 🎉 {ev.get('name')}")
+        ops = ev.get("ops", {})
+        st.write(
+            f"**Período:** {ev.get('startDate')} até {ev.get('endDate')} |"
+            f" **Categoria:** {ops.get('category')}"
+        )
+        st.write(
+            f"**Responsável:** {ops.get('responsible', 'N/D')} |"
+            f" **Requerente:** {ops.get('requester', 'N/D')} |"
+            f" **Atletas:** {ops.get('athletes', 0)}"
+        )
+        st.divider()
+
+  elif menu == "Histórico de Ações":
+    st.subheader("Registo de Atividade Recente (Logs)")
+    history = data.get("history", [])
+    for h in history:
+      st.text(
+          f"[{h.get('at')}] {h.get('user')} - {h.get('action')}:"
+          f" {h.get('detail')}"
+      )
